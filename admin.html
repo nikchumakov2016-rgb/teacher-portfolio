@@ -199,9 +199,6 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F5F5F
           <textarea id="results-intro" rows="1" placeholder="Краткое описание динамики результатов..."></textarea>
         </div>
       </div>
-      <div class="section-heading">Успеваемость и качество знаний</div>
-      <div class="items-list" id="list-academicResults"></div>
-      <button class="btn-add" onclick="addItem('academicResults')">+ Добавить строку</button>
       <div class="section-heading">Результаты олимпиад и конкурсов</div>
       <div class="items-list" id="list-olympiadResults"></div>
       <button class="btn-add" onclick="addItem('olympiadResults')">+ Добавить результат</button>
@@ -407,19 +404,13 @@ const T = {
       <div class="form-group"><label>Организация</label><input type="text" data-key="provider" value="${e(v.provider)}" placeholder="Организация"></div>
       <div class="form-group"><label>Год</label><input type="text" data-key="year" value="${e(v.year)}" placeholder="2024"></div>
       <div class="form-group"><label>Часов</label><input type="text" data-key="hours" value="${e(v.hours)}" placeholder="72"></div>
-    </div>`,
+    </div>
+    <div class="form-group"><label>Путь к файлу в assets/docs/</label><input type="text" data-key="file" value="${e(v.file||'')}" placeholder="assets/docs/certificate-2024.pdf"></div>`,
 
   interests: (v={}) => `
-    <div class="form-group" style="margin:0">
-      <input type="text" data-key="value" value="${e(v.value||'')}" placeholder="Например: Экология">
-    </div>`,
-
-  academicResults: (v={}) => `
-    <div class="fg4">
-      <div class="form-group"><label>Учебный год</label><input type="text" data-key="year" value="${e(v.year)}" placeholder="2023–2024"></div>
-      <div class="form-group"><label>Предмет</label><input type="text" data-key="subject" value="${e(v.subject)}" placeholder="Биология"></div>
-      <div class="form-group"><label>Успеваемость</label><input type="text" data-key="successRate" value="${e(v.successRate)}" placeholder="100%"></div>
-      <div class="form-group"><label>Качество знаний</label><input type="text" data-key="qualityRate" value="${e(v.qualityRate)}" placeholder="68%"></div>
+    <div class="fg2">
+      <div class="form-group"><label>Интерес / направление</label><input type="text" data-key="title" value="${e(v.title||v.value||'')}" placeholder="Например: Экология"></div>
+      <div class="form-group"><label>Путь к файлу в assets/docs/</label><input type="text" data-key="file" value="${e(v.file||'')}" placeholder="assets/docs/certificate-2024.pdf"></div>
     </div>`,
 
   olympiadResults: (v={}) => `
@@ -427,6 +418,10 @@ const T = {
       <div class="form-group"><label>Мероприятие</label><input type="text" data-key="event" value="${e(v.event)}" placeholder="Всероссийская олимпиада, муниципальный этап"></div>
       <div class="form-group"><label>Результат</label><input type="text" data-key="result" value="${e(v.result)}" placeholder="Призёр — Фамилия И., 9 класс"></div>
       <div class="form-group"><label>Год</label><input type="text" data-key="year" value="${e(v.year)}" placeholder="2024"></div>
+    </div>
+    <div class="fg2">
+      <div class="form-group"><label>Описание (необязательно)</label><input type="text" data-key="description" value="${e(v.description||'')}" placeholder="Дополнительные подробности..."></div>
+      <div class="form-group"><label>Путь к файлу в assets/docs/</label><input type="text" data-key="file" value="${e(v.file||'')}" placeholder="assets/docs/diploma-2024.pdf"></div>
     </div>`,
 
   awards: (v={}) => `
@@ -434,6 +429,10 @@ const T = {
       <div class="form-group"><label>Название награды</label><input type="text" data-key="name" value="${e(v.name)}" placeholder="Почётная грамота..."></div>
       <div class="form-group"><label>Кто выдал</label><input type="text" data-key="issuer" value="${e(v.issuer)}" placeholder="Министерство образования..."></div>
       <div class="form-group"><label>Год</label><input type="text" data-key="year" value="${e(v.year)}" placeholder="2023"></div>
+    </div>
+    <div class="fg2">
+      <div class="form-group"><label>Описание (необязательно)</label><input type="text" data-key="description" value="${e(v.description||'')}" placeholder="За вклад в развитие образования..."></div>
+      <div class="form-group"><label>Путь к файлу в assets/docs/</label><input type="text" data-key="file" value="${e(v.file||'')}" placeholder="assets/docs/award-2023.pdf"></div>
     </div>`,
 
   publications: (v={}) => `
@@ -442,7 +441,8 @@ const T = {
       <div class="form-group"><label>Где опубликовано</label><input type="text" data-key="source" value="${e(v.source)}" placeholder="Журнал / портал / сборник"></div>
       <div class="form-group"><label>Год</label><input type="text" data-key="year" value="${e(v.year)}" placeholder="2024"></div>
       <div class="form-group"><label>Ссылка (URL)</label><input type="url" data-key="link" value="${e(v.link)}" placeholder="https://..."></div>
-    </div>`,
+    </div>
+    <div class="form-group"><label>Путь к файлу в assets/docs/</label><input type="text" data-key="file" value="${e(v.file||'')}" placeholder="assets/docs/article-2024.pdf"></div>`,
 
   material: (v={}) => `
     <div class="fg3">
@@ -486,27 +486,27 @@ const T = {
 
   gallery: (v={}) => `
     <div class="fg2">
-      <div class="form-group"><label>Путь к фото</label><input type="text" data-key="src" value="${e(v.src)}" placeholder="assets/gallery/photo1.jpg"></div>
-      <div class="form-group"><label>Подпись</label><input type="text" data-key="caption" value="${e(v.caption)}" placeholder="Описание фотографии"></div>
-    </div>`,
+      <div class="form-group"><label>Путь к фото в assets/gallery/</label><input type="text" data-key="image" value="${e(v.image||v.src||'')}" placeholder="assets/gallery/photo-1.jpg"></div>
+      <div class="form-group"><label>Подпись</label><input type="text" data-key="title" value="${e(v.title||v.caption||'')}" placeholder="Лабораторная работа, 8 класс"></div>
+    </div>
+    <div class="form-group"><label>Описание (необязательно)</label><input type="text" data-key="description" value="${e(v.description||'')}" placeholder="Дополнительное описание фото"></div>`,
 };
 
 /* ── List config ── */
 const LC = {
   education:       { cid:'list-education',       tpl:'education',       keys:['institution','specialty','year'] },
-  courses:         { cid:'list-courses',          tpl:'courses',         keys:['name','provider','year','hours'] },
-  interests:       { cid:'list-interests',        tpl:'interests',       keys:['value'], flat:true },
-  academicResults: { cid:'list-academicResults',  tpl:'academicResults', keys:['year','subject','successRate','qualityRate'] },
-  olympiadResults: { cid:'list-olympiadResults',  tpl:'olympiadResults', keys:['event','result','year'] },
-  awards:          { cid:'list-awards',           tpl:'awards',          keys:['name','issuer','year'] },
-  publications:    { cid:'list-publications',     tpl:'publications',    keys:['title','source','year','link'] },
+  courses:         { cid:'list-courses',          tpl:'courses',         keys:['name','provider','year','hours','file'] },
+  interests:       { cid:'list-interests',        tpl:'interests',       keys:['title','file'] },
+  olympiadResults: { cid:'list-olympiadResults',  tpl:'olympiadResults', keys:['event','result','year','description','file'] },
+  awards:          { cid:'list-awards',           tpl:'awards',          keys:['name','issuer','year','description','file'] },
+  publications:    { cid:'list-publications',     tpl:'publications',    keys:['title','source','year','link','file'] },
   'oge-mat':       { cid:'list-oge-mat',          tpl:'material',        keys:['title','description','file'] },
   'ege-mat':       { cid:'list-ege-mat',          tpl:'material',        keys:['title','description','file'] },
   'vpr-mat':       { cid:'list-vpr-mat',          tpl:'material',        keys:['title','description','file'] },
   projects:        { cid:'list-projects',         tpl:'projects',        keys:['title','student','year','description','result','image'] },
   methods:         { cid:'list-methods',          tpl:'methods',         keys:['title','type','description','file'] },
   programs:        { cid:'list-programs',         tpl:'programs',        keys:['title','type','classes','description','file'] },
-  gallery:         { cid:'list-gallery',          tpl:'gallery',         keys:['src','caption'] },
+  gallery:         { cid:'list-gallery',          tpl:'gallery',         keys:['image','title','description'] },
 };
 
 /* ── Dynamic lists ── */
@@ -598,12 +598,13 @@ function populateForms(data) {
   clearAndPop('education', data.about?.education || []);
   clearAndPop('courses',   data.about?.courses   || []);
   clearList('list-interests');
-  (data.about?.professionalInterests || []).forEach(v => addItem('interests', { value: v }));
+  (data.about?.professionalInterests || []).forEach(v =>
+    addItem('interests', typeof v === 'string' ? { title: v, file: '' } : v)
+  );
 
   // Results
   setV('results-title', data.results?.title || '');
   setV('results-intro', data.results?.intro || '');
-  clearAndPop('academicResults', data.results?.academicResults || []);
   clearAndPop('olympiadResults', data.results?.olympiadResults || []);
   clearAndPop('awards',          data.results?.awards          || []);
 
@@ -685,7 +686,6 @@ function collectData() {
     results: {
       title:           getV('results-title') || 'Результаты педагогической деятельности',
       intro:           getV('results-intro'),
-      academicResults: collectList('academicResults'),
       olympiadResults: collectList('olympiadResults'),
       awards:          collectList('awards'),
     },

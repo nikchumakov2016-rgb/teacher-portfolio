@@ -126,12 +126,16 @@ function renderAbout(data) {
     <div class="course-item">
       <div class="course-name">${esc(c.name)}</div>
       <div class="course-meta">${esc(c.provider)}${c.year ? `, ${esc(c.year)}` : ''}${c.hours ? ` · ${esc(c.hours)} ч.` : ''}</div>
+      ${c.file ? downloadBtn(c.file, 'Скачать документ') : ''}
     </div>
   `).join('');
 
-  const interests = (d.professionalInterests || []).map(i =>
-    `<li>${esc(i)}</li>`
-  ).join('');
+  const interests = (d.professionalInterests || []).map(i => {
+    const title = i.title !== undefined ? i.title : i;
+    return i.file
+      ? `<a href="${esc(i.file)}" class="tag tag-link" download>${esc(title)}</a>`
+      : `<span class="tag">${esc(title)}</span>`;
+  }).join('');
 
   el.innerHTML = `
     <div class="container">
@@ -158,7 +162,7 @@ function renderAbout(data) {
           ${interests ? `
           <div class="about-block" style="margin-top:1.25rem">
             <div class="about-block-title">Профессиональные интересы</div>
-            <div class="tags">${(d.professionalInterests || []).map(i => `<span class="tag">${esc(i)}</span>`).join('')}</div>
+            <div class="tags">${interests}</div>
           </div>` : ''}
         </div>
       </div>
@@ -169,27 +173,22 @@ function renderResults(data) {
   const d = data.results;
   const el = document.getElementById('results');
 
-  const tableRows = (d.academicResults || []).map(r => `
-    <tr>
-      <td>${esc(r.year)}</td>
-      <td>${esc(r.subject)}</td>
-      <td>${esc(r.successRate)}</td>
-      <td>${esc(r.qualityRate)}</td>
-    </tr>
-  `).join('');
-
   const olympiads = (d.olympiadResults || []).map(o => `
     <div class="olympiad-item">
       <div class="olympiad-event">${esc(o.event)}</div>
+      ${o.description ? `<div class="olympiad-desc">${esc(o.description)}</div>` : ''}
       <div class="olympiad-result">${esc(o.result)}</div>
       <div class="olympiad-year">${esc(o.year)}</div>
+      ${o.file ? downloadBtn(o.file, 'Документ') : ''}
     </div>
   `).join('');
 
   const awards = (d.awards || []).map(a => `
     <div class="award-item">
       <div class="award-name">${esc(a.name)}</div>
+      ${a.description ? `<div class="award-desc">${esc(a.description)}</div>` : ''}
       <div class="award-issuer">${esc(a.issuer)}${a.year ? `, ${esc(a.year)} г.` : ''}</div>
+      ${a.file ? downloadBtn(a.file, 'Скан') : ''}
     </div>
   `).join('');
 
@@ -197,24 +196,6 @@ function renderResults(data) {
     <div class="container">
       <h2 class="section-title">${esc(d.title)}</h2>
       ${d.intro ? `<p class="section-intro">${esc(d.intro)}</p>` : ''}
-
-      ${tableRows ? `
-      <div style="margin-bottom:2rem">
-        <div class="results-block-title">${ICONS.book} Успеваемость и качество знаний</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Учебный год</th>
-                <th>Предмет</th>
-                <th>Успеваемость</th>
-                <th>Качество знаний</th>
-              </tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-          </table>
-        </div>
-      </div>` : ''}
 
       <div class="cards-grid-2">
         ${olympiads ? `
@@ -243,6 +224,7 @@ function renderPublications(data) {
       <div class="publication-footer">
         <span class="tag">${esc(p.year)}</span>
         ${p.link ? openBtn(p.link, 'Открыть публикацию') : ''}
+        ${p.file ? downloadBtn(p.file, 'Скачать PDF') : ''}
       </div>
     </div>
   `).join('');
@@ -383,17 +365,21 @@ function renderGallery(data) {
   const d = data.gallery;
   const el = document.getElementById('gallery');
 
-  const items = (d.images || []).map((img, i) => `
+  const items = (d.images || []).map(img => {
+    const src   = img.image || img.src   || '';
+    const title = img.title || img.caption || '';
+    const desc  = img.description || '';
+    return `
     <div class="gallery-item" tabindex="0" role="button"
-         aria-label="Открыть фото: ${esc(img.caption || '')}"
-         data-src="${esc(img.src)}" data-caption="${esc(img.caption || '')}">
-      <img src="${esc(img.src)}" alt="${esc(img.caption || 'Фото')}"
+         aria-label="Открыть фото: ${esc(title)}"
+         data-src="${esc(src)}" data-caption="${esc(title)}">
+      <img src="${esc(src)}" alt="${esc(title || 'Фото')}"
            loading="lazy" onerror="this.parentElement.style.display='none'">
       <div class="gallery-item-overlay">
-        <div class="gallery-item-caption">${esc(img.caption || '')}</div>
+        <div class="gallery-item-caption">${esc(title)}${desc ? `<br><small>${esc(desc)}</small>` : ''}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   el.innerHTML = `
     <div class="container">
