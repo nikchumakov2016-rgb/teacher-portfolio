@@ -88,7 +88,7 @@ function renderHero(data) {
 
   const photoHTML = d.photo
     ? `<img src="${esc(d.photo)}" alt="Фото ${esc(d.fullName)}" class="hero-photo"
-           onerror="this.parentElement.innerHTML='<div class=hero-photo-placeholder>${ICONS.person}<span>Фото</span></div>'">`
+           onerror="this.onerror=null;this.style.display='none'">`
     : `<div class="hero-photo-placeholder">${ICONS.person}<span>Добавьте фото</span></div>`;
 
   document.getElementById('hero').innerHTML = `
@@ -99,7 +99,13 @@ function renderHero(data) {
           <div class="hero-position">${esc(d.position)}</div>
           <h1 class="hero-name">${esc(d.fullName)}</h1>
           <p class="hero-school">${esc(d.school)}</p>
-          ${d.motto ? `<blockquote class="hero-motto">${esc(d.motto)}</blockquote>` : ''}
+          ${d.motto ? (() => {
+            const lastDash = d.motto.lastIndexOf(' — ');
+            const inner = lastDash > 0
+              ? `<span class="hero-motto-text">${esc(d.motto.slice(0, lastDash))}</span><cite class="hero-motto-author">— ${esc(d.motto.slice(lastDash + 3))}</cite>`
+              : esc(d.motto);
+            return `<blockquote class="hero-motto">${inner}</blockquote>`;
+          })() : ''}
           <div class="hero-badges">${badges}</div>
         </div>
       </div>
@@ -125,8 +131,8 @@ function renderAbout(data) {
   const courses = (d.courses || []).map(c => `
     <div class="course-item">
       <div class="course-name">${esc(c.name)}</div>
-      <div class="course-meta">${esc(c.provider)}${c.year ? `, ${esc(c.year)}` : ''}${c.hours ? ` · ${esc(c.hours)} ч.` : ''}</div>
-      ${c.file ? downloadBtn(c.file, 'Скачать документ') : ''}
+      <div class="course-meta">${[c.provider && esc(c.provider), c.year && esc(c.year)].filter(Boolean).join(', ')}${c.hours ? ` · ${esc(c.hours)} ч.` : ''}</div>
+      ${c.file ? downloadBtn(c.file, 'Скачать') : ''}
     </div>
   `).join('');
 
@@ -152,17 +158,17 @@ function renderAbout(data) {
             <div class="about-block-title">Тема самообразования</div>
             <p>${esc(d.selfEducationTopic)}</p>
           </div>` : ''}
+          ${interests ? `
+          <div class="about-block" style="margin-top:1.25rem">
+            <div class="about-block-title">Профессиональные интересы</div>
+            <div class="tags">${interests}</div>
+          </div>` : ''}
         </div>
         <div>
           ${courses ? `
           <div class="about-block">
             <div class="about-block-title">Повышение квалификации</div>
             ${courses}
-          </div>` : ''}
-          ${interests ? `
-          <div class="about-block" style="margin-top:1.25rem">
-            <div class="about-block-title">Профессиональные интересы</div>
-            <div class="tags">${interests}</div>
           </div>` : ''}
         </div>
       </div>
@@ -179,7 +185,7 @@ function renderResults(data) {
       ${o.description ? `<div class="olympiad-desc">${esc(o.description)}</div>` : ''}
       <div class="olympiad-result">${esc(o.result)}</div>
       <div class="olympiad-year">${esc(o.year)}</div>
-      ${o.file ? downloadBtn(o.file, 'Документ') : ''}
+      ${o.file ? downloadBtn(o.file, 'Скачать') : ''}
     </div>
   `).join('');
 
@@ -188,7 +194,7 @@ function renderResults(data) {
       <div class="award-name">${esc(a.name)}</div>
       ${a.description ? `<div class="award-desc">${esc(a.description)}</div>` : ''}
       <div class="award-issuer">${esc(a.issuer)}${a.year ? `, ${esc(a.year)} г.` : ''}</div>
-      ${a.file ? downloadBtn(a.file, 'Скан') : ''}
+      ${a.file ? downloadBtn(a.file, 'Скачать') : ''}
     </div>
   `).join('');
 
@@ -224,7 +230,7 @@ function renderPublications(data) {
       <div class="publication-footer">
         <span class="tag">${esc(p.year)}</span>
         ${p.link ? openBtn(p.link, 'Открыть публикацию') : ''}
-        ${p.file ? downloadBtn(p.file, 'Скачать PDF') : ''}
+        ${p.file ? downloadBtn(p.file, 'Скачать') : ''}
       </div>
     </div>
   `).join('');
@@ -295,11 +301,12 @@ function renderResearch(data) {
       ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.title)}" class="research-card-img"
           onerror="this.style.display='none'">` : ''}
       <div class="research-card-body">
-        <div class="research-card-year">${esc(p.year)}</div>
+        ${p.year ? `<div class="research-card-year">${esc(p.year)}</div>` : ''}
         <div class="research-card-title">${esc(p.title)}</div>
         <div class="research-card-student">${esc(p.student)}</div>
         <p class="research-card-desc">${esc(p.description)}</p>
         ${p.result ? `<div class="research-card-result">${esc(p.result)}</div>` : ''}
+        ${p.file ? downloadBtn(p.file, 'Скачать') : ''}
       </div>
     </div>
   `).join('');
@@ -364,6 +371,11 @@ function renderPrograms(data) {
 function renderGallery(data) {
   const d = data.gallery;
   const el = document.getElementById('gallery');
+
+  if (!d.images || d.images.length === 0) {
+    el.hidden = true;
+    return;
+  }
 
   const items = (d.images || []).map(img => {
     const src   = img.image || img.src   || '';
@@ -446,11 +458,15 @@ function renderContacts(data) {
 /* =============================================
    Навигация
    ============================================= */
-function buildNav() {
+function buildNav(data) {
   const navList = document.getElementById('nav-list');
   if (!navList) return;
 
-  navList.innerHTML = Object.entries(NAV_LABELS).map(([id, label]) => `
+  const emptyGallery = !data.gallery.images || data.gallery.images.length === 0;
+
+  navList.innerHTML = Object.entries(NAV_LABELS)
+    .filter(([id]) => !(id === 'gallery' && emptyGallery))
+    .map(([id, label]) => `
     <li><a href="#${id}" data-section="${id}">${label}</a></li>
   `).join('');
 
@@ -607,6 +623,34 @@ function setupGalleryModal(galleryEl) {
 }
 
 /* =============================================
+   Анимации появления при скролле
+   ============================================= */
+function setupRevealAnimations() {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  const selectors = [
+    '.about-block', '.publication-item', '.method-item',
+    '.program-item', '.research-card', '.material-item',
+    '.contact-item', '.olympiad-item', '.award-item',
+  ].join(', ');
+
+  const targets = document.querySelectorAll(selectors);
+  targets.forEach(el => el.classList.add('reveal-target'));
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+  targets.forEach(el => observer.observe(el));
+}
+
+/* =============================================
    Главная функция — загрузка и рендеринг
    ============================================= */
 async function init() {
@@ -651,7 +695,7 @@ async function init() {
   renderContacts(data);
 
   // UI
-  buildNav();
+  buildNav(data);
   setupBurger();
   setupStickyHeader();
   setupBackToTop();
@@ -659,6 +703,7 @@ async function init() {
   // Intersection Observer запускаем после рендера
   requestAnimationFrame(() => {
     setupActiveNav();
+    setupRevealAnimations();
   });
 
   // Если в URL есть якорь — скроллим к нему

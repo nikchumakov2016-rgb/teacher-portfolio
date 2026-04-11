@@ -19,9 +19,9 @@
   --header-height: 64px;
   --container-width: 1100px;
   --radius-card: 12px;
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.12);
-  --transition: all 0.3s ease;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 14px rgba(74,124,89,0.12), 0 8px 24px rgba(0,0,0,0.09);
+  --transition: all 0.25s ease;
 }
 
 /* =============================================
@@ -79,8 +79,9 @@ p { margin-bottom: 0; }
 
 .section-title {
   font-size: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   color: var(--color-text);
+  letter-spacing: -0.01em;
 }
 
 .section-intro {
@@ -227,17 +228,20 @@ p { margin-bottom: 0; }
 }
 
 .hero-photo {
-  width: 240px;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(74, 124, 89, 0.2);
-  border: 3px solid var(--color-primary-light);
+  width: 260px;
+  height: auto;
+  max-height: 380px;
+  object-fit: contain;
+  display: block;
+  border-radius: 18px;
+  box-shadow: 0 6px 28px rgba(74, 124, 89, 0.22), 0 2px 8px rgba(0,0,0,0.08);
+  border: 3px solid rgba(255,255,255,0.9);
+  outline: 2px solid var(--color-primary-light);
 }
 
 .hero-photo-placeholder {
-  width: 240px;
-  height: 240px;
+  width: 260px;
+  height: 300px;
   border-radius: 16px;
   background: var(--color-primary-light);
   border: 3px solid var(--color-border);
@@ -285,14 +289,27 @@ p { margin-bottom: 0; }
 }
 
 .hero-motto {
+  margin-bottom: 2rem;
+  padding: 0.9rem 1.2rem;
+  border-left: 2px solid var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hero-motto-text {
   font-size: 1rem;
+  font-style: italic;
   color: var(--color-text);
   line-height: 1.7;
-  padding: 1rem 1.25rem;
-  border-left: 3px solid var(--color-primary);
-  background: var(--color-primary-light);
-  border-radius: 0 8px 8px 0;
-  margin-bottom: 2rem;
+}
+
+.hero-motto-author {
+  font-size: 0.82rem;
+  font-style: normal;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 /* Бейджи */
@@ -307,16 +324,16 @@ p { margin-bottom: 0; }
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
-  padding: 0.9rem 1rem;
+  padding: 1rem 1.1rem;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  transition: var(--transition);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .badge:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-card-hover);
 }
 
@@ -355,7 +372,7 @@ p { margin-bottom: 0; }
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-card-hover);
 }
 
@@ -818,8 +835,8 @@ table tr:nth-child(even) td { background: var(--color-primary-light); }
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
-  white-space: nowrap;
   flex-shrink: 0;
+  line-height: 1.4;
 }
 
 /* =============================================
@@ -1185,10 +1202,15 @@ table tr:nth-child(even) td { background: var(--color-primary-light); }
     justify-content: center;
   }
 
-  .hero-photo,
+  .hero-photo {
+    width: 200px;
+    height: auto;
+    max-height: 300px;
+  }
+
   .hero-photo-placeholder {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 240px;
   }
 
   .hero-badges {
@@ -1246,6 +1268,28 @@ table tr:nth-child(even) td { background: var(--color-primary-light); }
     padding: 0.5rem 1rem;
     font-size: 0.88rem;
     white-space: nowrap;
+  }
+}
+
+/* =============================================
+   Анимации появления при скролле
+   ============================================= */
+.reveal-target {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.42s ease, transform 0.42s ease;
+}
+
+.reveal-target.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-target {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
